@@ -10,6 +10,7 @@ import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -21,6 +22,7 @@ import org.junit.Test;
 
 import com.algaworks.curso.jpa2.modelo.Aluguel;
 import com.algaworks.curso.jpa2.modelo.Carro;
+import com.algaworks.curso.jpa2.modelo.ModeloCarro;
 
 public class ExemplosCriteria {
 
@@ -165,6 +167,25 @@ public class ExemplosCriteria {
 			System.out.println(c.getPlaca() + " - " + c.getValorDiaria());
 		}
 		
+	}
+	
+	@Test
+	public void exemploJoinEFetch() {
+		CriteriaBuilder builder = manager.getCriteriaBuilder();
+		CriteriaQuery<Carro> criteriaQuery = builder.createQuery(Carro.class);
+		
+		Root<Carro> carro = criteriaQuery.from(Carro.class);
+		Join<Carro, ModeloCarro> modelo = (Join) carro.fetch("modelo");
+		
+		criteriaQuery.select(carro);
+		criteriaQuery.where(builder.equal(modelo.get("descricao"), "Fit"));
+		
+		TypedQuery<Carro> query = manager.createQuery(criteriaQuery);
+		List<Carro> carros = query.getResultList();
+		
+		for (Carro c : carros) {
+			System.out.println(c.getPlaca());
+		}
 	}
 }
 

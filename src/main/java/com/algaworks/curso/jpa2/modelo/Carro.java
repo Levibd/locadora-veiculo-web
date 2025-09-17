@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -18,7 +19,7 @@ import javax.persistence.OneToMany;
 
 @Entity
 @NamedQueries({
-	@NamedQuery(name = "Carro.buscarTodos", query="select c from Carro c"),
+	@NamedQuery(name = "Carro.buscarTodos", query="select c from Carro c inner join fetch c.modelo"),
 	@NamedQuery(name = "Carro.buscarCarrosComAcessorios", query = "select c from Carro c JOIN c.acessorios a where c.codigo = :codigo")
 })
 
@@ -36,7 +37,7 @@ public class Carro implements Serializable {
 	@OneToMany(mappedBy = "carro")
 	private List<Aluguel> alugueis;
 	
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "codigo_modelo")
 	private ModeloCarro modelo;
 	
