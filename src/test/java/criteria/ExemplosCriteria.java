@@ -10,6 +10,8 @@ import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import org.junit.After;
@@ -119,6 +121,48 @@ public class ExemplosCriteria {
 		
 		for (PrecoCarro precoCarro : resultado) {
 			System.out.println(precoCarro.getPlaca() + " - " + precoCarro.getValor());
+		}
+		
+	}
+	
+	@Test
+	public void exemploFuncao() {
+		CriteriaBuilder builder = manager.getCriteriaBuilder();
+		CriteriaQuery<Carro> criteriaQuery = builder.createQuery(Carro.class);
+		
+		Root<Carro> carro = criteriaQuery.from(Carro.class);
+		
+		Predicate predicate = builder.equal(builder.upper(carro.<String>get("cor")),
+									"prata".toUpperCase());
+		
+		criteriaQuery.select(carro);
+		criteriaQuery.where(predicate);
+		
+		TypedQuery<Carro> query = manager.createQuery(criteriaQuery);
+		List<Carro> carros = query.getResultList();
+		
+		for (Carro c : carros) {
+			System.out.println(c.getPlaca() + " - " + c.getCor());
+		}
+	}
+	
+	@Test
+	public void exemploOrdenacao() {
+		CriteriaBuilder builder = manager.getCriteriaBuilder();
+		CriteriaQuery<Carro> criteriaQuery = builder.createQuery(Carro.class);
+		
+		Root<Carro> carro = criteriaQuery.from(Carro.class);
+		Order order = builder.desc(carro.get("valorDiaria"));
+		
+		criteriaQuery.select(carro);
+		criteriaQuery.orderBy(order);
+		
+		TypedQuery<Carro> query = manager.createQuery(criteriaQuery);
+		
+		List<Carro> carros = query.getResultList();
+		
+		for (Carro c : carros) {
+			System.out.println(c.getPlaca() + " - " + c.getValorDiaria());
 		}
 		
 	}
